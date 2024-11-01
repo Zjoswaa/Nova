@@ -13,6 +13,8 @@
 // #define STB_IMAGE_IMPLEMENTATION
 // #include "stb_image.h"
 
+#include "Nova/Log.h"
+
 #ifdef _WIN32
 #include <windows.h>
 
@@ -175,8 +177,6 @@ void Nova::start() {
 
 	// Setup Dear ImGui style
 	setImguiTheme();
-	// ImGui::StyleColorsDark();
-	// ImGui::StyleColorsLight();
 
 	// Setup Platform/Renderer backends
 	ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
@@ -189,19 +189,17 @@ void Nova::start() {
 		throw std::runtime_error("Failed to initialize GLAD");
 	}
 
-#ifdef DEBUG
-	std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
-	std::cout << "GLSL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
-	std::cout << "Vendor: " << glGetString(GL_VENDOR) << std::endl;
-	std::cout << "Renderer: " << glGetString(GL_RENDERER) << std::endl;
-	int nrAttributes;
-	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
-	std::cout << "Max vertex attribute count: " << nrAttributes << std::endl;
-#endif
+	// std::cout << "GLSL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+	// std::cout << "Vendor: " << glGetString(GL_VENDOR) << std::endl;
+	// std::cout << "Renderer: " << glGetString(GL_RENDERER) << std::endl;
+	// int nrAttributes;
+	// glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
+	// std::cout << "Max vertex attribute count: " << nrAttributes << std::endl;
 
 	glEnable(GL_DEPTH_TEST);
 
 	ImFont* menuFont = ImGui::GetIO().Fonts->AddFontFromFileTTF("res/fonts/JetBrainsMonoNLNerdFont-Medium.ttf", 18);
+	bool showOpenGLInfoWindow = true;
 
 	// Loop until the user closes the window
 	bool running = true;
@@ -232,18 +230,35 @@ void Nova::start() {
 		ImGui::PushFont(menuFont);
 		ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
 
-		ImGui::ShowDemoWindow();
+		// ImGui::ShowDemoWindow();
+
+		if (showOpenGLInfoWindow) {
+			ImGui::SetNextWindowPos({ImGui::GetMainViewport()->WorkPos.x + 20.f, ImGui::GetMainViewport()->WorkPos.y + 20.f}, ImGuiCond_Once);
+			ImGui::SetNextWindowBgAlpha(0.75);
+			if (ImGui::Begin("OpenGL Information", &showOpenGLInfoWindow, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav)) {
+				ImGui::Text(std::format("OpenGL Version: {}", reinterpret_cast<const char *>(glGetString(GL_VERSION))).c_str());
+				ImGui::Text(std::format("Vendor: {}", reinterpret_cast<const char *>(glGetString(GL_VENDOR))).c_str());
+				ImGui::Text(std::format("Renderer: {}", reinterpret_cast<const char *>(glGetString(GL_RENDERER))).c_str());
+				ImGui::Text(std::format("GLSL Version: {}", reinterpret_cast<const char *>(glGetString(GL_SHADING_LANGUAGE_VERSION))).c_str());
+				if (ImGui::BeginPopupContextWindow()) {
+					if (showOpenGLInfoWindow && ImGui::MenuItem("Close")) {
+						showOpenGLInfoWindow = false;
+					}
+					ImGui::EndPopup();
+				}
+			}
+			ImGui::End();
+		}
+
 		ImGui::PopFont();
 
-		// Rendering
+		// ImGui Rendering
 		ImGui::Render();
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 		// Update and Render additional Platform Windows
-		// (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this code elsewhere.
-		//  For this specific demo app we could also call SDL_GL_MakeCurrent(window, gl_context) directly)
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
 			SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
 			SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();

@@ -29,6 +29,11 @@ Nova is a game engine written in C++
     - **Version:** 2.30
     - **Link:** [GitHub](https://github.com/nothings/stb)
 
+- **spdlog**
+  - **Usage:** Logging
+  - **Version:** 1.14.1
+  - **Link:** [GitHub](https://github.com/gabime/spdlog)
+
 - **(Planned) irrKlang**
     - **Usage:** 2D and 3D audio
     - **Version:** T.B.A.

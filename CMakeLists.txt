@@ -23,5 +23,7 @@ endif()
 add_definitions(-DPROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\")
 add_subdirectory(vendor/SDL)
 
+add_subdirectory(vendor/spdlog)
+
 add_subdirectory(Nova)
 add_subdirectory(Sandbox)

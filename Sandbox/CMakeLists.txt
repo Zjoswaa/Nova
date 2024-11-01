@@ -10,7 +10,7 @@ add_executable(${PROJECT_NAME} ${PROJECT_HEADERS} ${PROJECT_SOURCES} ${PROJECT_C
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/Nova/include/)
 
-target_link_libraries(${PROJECT_NAME} Nova SDL2::SDL2 ${GLAD_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PRIVATE Nova)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
 
